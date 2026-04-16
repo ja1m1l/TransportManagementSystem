@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Transport Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+
+<body class="dark-theme">
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar glass-panel">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <h2>Nexus<span>TMS</span></h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-view="dashboard">
+                    <span class="icon">📊</span> Dashboard
+                </a>
+                <a href="#" class="nav-item" data-view="vehicles">
+                    <span class="icon">🚚</span> Vehicles
+                </a>
+                <a href="#" class="nav-item" data-view="drivers">
+                    <span class="icon">🧑‍✈️</span> Drivers
+                </a>
+                <a href="#" class="nav-item" data-view="trips">
+                    <span class="icon">📍</span> Trips
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <p>Status: <span class="status-indicator online"></span> Online</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-nav glass-panel">
+                <div class="nav-left">
+                    <h1 id="page-title">Overview</h1>
+                </div>
+                <div class="nav-right">
+                    <button class="btn-icon">🔔</button>
+                    <div class="user-profile">
+                        <div class="avatar">A</div>
+                        <span>Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <div id="view-container" class="view-container">
+                <!-- Dashboard View -->
+                <section id="dashboard" class="view active">
+                    <div class="stats-grid">
+                        <div class="stat-card glass-panel">
+                            <h3>Total Vehicles</h3>
+                            <p class="stat-value" id="stat-total-vehicles">0</p>
+                        </div>
+                        <div class="stat-card glass-panel">
+                            <h3>Active Vehicles</h3>
+                            <p class="stat-value highlight-green" id="stat-active-vehicles">0</p>
+                        </div>
+                        <div class="stat-card glass-panel">
+                            <h3>Total Drivers</h3>
+                            <p class="stat-value" id="stat-total-drivers">0</p>
+                        </div>
+                        <div class="stat-card glass-panel">
+                            <h3>Active Trips</h3>
+                            <p class="stat-value highlight-blue" id="stat-active-trips">0</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-widgets">
+                        <div class="widget glass-panel">
+                            <h3>Recent Trips</h3>
+                            <div class="table-container">
+                                <table id="recent-trips-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Destination</th>
+                                            <th>Vehicle</th>
+                                            <th>Driver</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Populated via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Vehicles View -->
+                <section id="vehicles" class="view hidden">
+                    <div class="view-header">
+                        <h2>Vehicle Fleet</h2>
+                        <button class="btn btn-primary" onclick="app.openModal('vehicle-modal')">+ Add Vehicle</button>
+                    </div>
+                    <div class="table-container glass-panel">
+                        <table id="vehicles-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>License Plate</th>
+                                    <th>Make</th>
+                                    <th>Model</th>
+                                    <th>Year</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Drivers View -->
+                <section id="drivers" class="view hidden">
+                    <div class="view-header">
+                        <h2>Driver Roster</h2>
+                        <button class="btn btn-primary" onclick="app.openModal('driver-modal')">+ Add Driver</button>
+                    </div>
+                    <div class="table-container glass-panel">
+                        <table id="drivers-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>License</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Trips View -->
+                <section id="trips" class="view hidden">
+                    <div class="view-header">
+                        <h2>Active & Scheduled Trips</h2>
+                        <button class="btn btn-primary" onclick="app.openModal('trip-modal')">+ Schedule Trip</button>
+                    </div>
+                    <div class="table-container glass-panel">
+                        <table id="trips-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Destination</th>
+                                    <th>Start Date</th>
+                                    <th>Vehicle</th>
+                                    <th>Driver</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="vehicle-modal" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h2>Add Vehicle</h2>
+                <button class="close-btn" onclick="app.closeModal('vehicle-modal')">×</button>
+            </div>
+            <form id="vehicle-form" onsubmit="app.submitVehicle(event)">
+                <div class="form-group">
+                    <label>Make</label>
+                    <input type="text" id="veh-make" required placeholder="e.g. Volvo">
+                </div>
+                <div class="form-group">
+                    <label>Model</label>
+                    <input type="text" id="veh-model" required placeholder="e.g. FH16">
+                </div>
+                <div class="form-group">
+                    <label>Year</label>
+                    <input type="number" id="veh-year" required placeholder="2026">
+                </div>
+                <div class="form-group">
+                    <label>License Plate</label>
+                    <input type="text" id="veh-plate" required placeholder="ABC-1234">
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Save Vehicle</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="driver-modal" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h2>Add Driver</h2>
+                <button class="close-btn" onclick="app.closeModal('driver-modal')">×</button>
+            </div>
+            <form id="driver-form" onsubmit="app.submitDriver(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="drv-name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>License Number</label>
+                    <input type="text" id="drv-license" required placeholder="DL-123456">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" id="drv-phone" placeholder="+1 234 567 890">
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Save Driver</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="trip-modal" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h2>Schedule Trip</h2>
+                <button class="close-btn" onclick="app.closeModal('trip-modal')">×</button>
+            </div>
+            <form id="trip-form" onsubmit="app.submitTrip(event)">
+                <div class="form-group">
+                    <label>Destination</label>
+                    <input type="text" id="trip-dest" required placeholder="E.g. Los Angeles, CA">
+                </div>
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" id="trip-start" required>
+                </div>
+                <div class="form-group">
+                    <label>Select Vehicle</label>
+                    <select id="trip-vehicle" required>
+                        <option value="">Loading vehicles...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Select Driver</label>
+                    <select id="trip-driver" required>
+                        <option value="">Loading drivers...</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Schedule Trip</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
