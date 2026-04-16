@@ -1,274 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Transport Management</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/components.css">
+    <title>Nexus Transport & Logistics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; font-family: 'Inter', sans-serif; background: #0f172a; color: #fff; overflow-x: hidden; }
+        .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); position: relative; text-align: center; padding: 2rem; }
+        .hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 100%; background: url('https://www.transparenttextures.com/patterns/cubes.png'); opacity: 0.05; pointer-events: none; }
+        h1 { font-family: 'Outfit', sans-serif; font-size: 4.5rem; font-weight: 900; margin-bottom: 1rem; background: linear-gradient(135deg, #38bdf8, #818cf8); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        p.subtitle { font-size: 1.25rem; max-width: 600px; color: #94a3b8; line-height: 1.6; margin-bottom: 2.5rem; }
+        .cta-btn { display: inline-block; background: linear-gradient(135deg, #3b82f6, #6366f1); color: #fff; padding: 1rem 3rem; border-radius: 9999px; text-decoration: none; font-weight: 600; font-size: 1.25rem; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5); cursor: pointer; border: none; }
+        .cta-btn:hover { transform: translateY(-3px); box-shadow: 0 20px 35px -5px rgba(59, 130, 246, 0.6); }
+        .features { display: flex; gap: 2rem; margin-top: 4rem; justify-content: center; flex-wrap: wrap; }
+        .feature-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); padding: 2rem; border-radius: 1rem; border: 1px solid rgba(255, 255, 255, 0.1); width: 250px; text-align: left; transition: transform 0.3s, background 0.3s, box-shadow 0.3s; cursor: default; }
+        .feature-card:hover { transform: translateY(-8px); background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.4); box-shadow: 0 10px 30px -5px rgba(0,0,0,0.5); }
+        .feature-card h3 { color: #f8fafc; font-size: 1.25rem; margin-bottom: 0.5rem; font-family: 'Outfit'; }
+        .feature-card p { color: #cbd5e1; font-size: 0.9rem; }
+        .icon-box { font-size: 2rem; margin-bottom: 1rem; }
+
+        /* Auth Nav & Modal */
+        .auth-nav { position: absolute; top: 2rem; right: 2rem; display: flex; gap: 1rem; z-index: 10; }
+        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0.5rem 1.5rem; border-radius: 9999px; font-weight: 600; cursor: pointer; transition: 0.2s; font-family: 'Inter'; }
+        .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.4); }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); align-items: center; justify-content: center; z-index: 100; }
+        .modal.active { display: flex; }
+        .auth-card { background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(59, 130, 246, 0.3); padding: 2.5rem; border-radius: 1.5rem; width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); position: relative; }
+        .auth-card h2 { margin: 0 0 1.5rem 0; font-family: 'Outfit'; font-size: 2rem; }
+        .form-group { margin-bottom: 1rem; text-align: left; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: #94a3b8; }
+        .form-group input { box-sizing: border-box; width: 100%; padding: 0.75rem 1rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: white; font-family: 'Inter'; transition: 0.2s; }
+        .form-group input:focus { outline: none; border-color: #3b82f6; background: rgba(0,0,0,0.6); }
+        .w-full { width: 100%; margin-top: 1rem; background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; border: none; padding: 0.9rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .w-full:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        .toggle-form { margin-top: 1rem; font-size: 0.9rem; color: #94a3b8; cursor: pointer; background:none; border:none; width:100%; font-family: 'Inter'; }
+        .toggle-form span { color: #3b82f6; font-weight: bold; }
+        .close-btn { position: absolute; top: 1rem; right: 1.5rem; background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer; }
+        .hidden { display: none !important; }
+    </style>
 </head>
+<body>
+    <div class="hero">
+        <div class="auth-nav">
+            <button class="btn-outline" onclick="openAuth('login')">Login</button>
+            <button class="cta-btn" style="font-size: 0.9rem; padding: 0.5rem 1.5rem;" onclick="openAuth('signup')">Sign Up</button>
+        </div>
 
-<body class="dark-theme">
-    <div class="app-container">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar glass-panel">
-            <div class="logo">
-                <div class="logo-icon"></div>
-                <h2>Nexus<span>TMS</span></h2>
+        <h1>Nexus Transport</h1>
+        <p class="subtitle">Next-generation logistics management. Streamline your fleet, optimize your trips, and track everything in real-time with our intelligent dashboard.</p>
+        <button class="cta-btn" onclick="openAuth('login')">Book Now</button>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="icon-box">🚚</div>
+                <h3>Fleet Management</h3>
+                <p>Keep track of your entire fleet, including status and details.</p>
             </div>
-            <nav class="nav-menu">
-                <a href="#" class="nav-item active" data-view="dashboard">
-                    <span class="icon">📊</span> Dashboard
-                </a>
-                <a href="#" class="nav-item" data-view="vehicles">
-                    <span class="icon">🚚</span> Vehicles
-                </a>
-                <a href="#" class="nav-item" data-view="drivers">
-                    <span class="icon">🧑‍✈️</span> Drivers
-                </a>
-                <a href="#" class="nav-item" data-view="trips">
-                    <span class="icon">📍</span> Trips
-                </a>
-            </nav>
-            <div class="sidebar-footer">
-                <p>Status: <span class="status-indicator online"></span> Online</p>
+            <div class="feature-card">
+                <div class="icon-box">🧑‍✈️</div>
+                <h3>Driver Rosters</h3>
+                <p>Manage your drivers efficiently and ensure optimal utilization.</p>
             </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <header class="top-nav glass-panel">
-                <div class="nav-left">
-                    <h1 id="page-title">Overview</h1>
-                </div>
-                <div class="nav-right">
-                    <button class="btn-icon">🔔</button>
-                    <div class="user-profile">
-                        <div class="avatar">A</div>
-                        <span>Admin</span>
-                    </div>
-                </div>
-            </header>
-
-            <div id="view-container" class="view-container">
-                <!-- Dashboard View -->
-                <section id="dashboard" class="view active">
-                    <div class="stats-grid">
-                        <div class="stat-card glass-panel">
-                            <h3>Total Vehicles</h3>
-                            <p class="stat-value" id="stat-total-vehicles">0</p>
-                        </div>
-                        <div class="stat-card glass-panel">
-                            <h3>Active Vehicles</h3>
-                            <p class="stat-value highlight-green" id="stat-active-vehicles">0</p>
-                        </div>
-                        <div class="stat-card glass-panel">
-                            <h3>Total Drivers</h3>
-                            <p class="stat-value" id="stat-total-drivers">0</p>
-                        </div>
-                        <div class="stat-card glass-panel">
-                            <h3>Active Trips</h3>
-                            <p class="stat-value highlight-blue" id="stat-active-trips">0</p>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-widgets">
-                        <div class="widget glass-panel">
-                            <h3>Recent Trips</h3>
-                            <div class="table-container">
-                                <table id="recent-trips-table">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Destination</th>
-                                            <th>Vehicle</th>
-                                            <th>Driver</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Populated via JS -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Vehicles View -->
-                <section id="vehicles" class="view hidden">
-                    <div class="view-header">
-                        <h2>Vehicle Fleet</h2>
-                        <button class="btn btn-primary" onclick="app.openModal('vehicle-modal')">+ Add Vehicle</button>
-                    </div>
-                    <div class="table-container glass-panel">
-                        <table id="vehicles-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>License Plate</th>
-                                    <th>Make</th>
-                                    <th>Model</th>
-                                    <th>Year</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Populated via JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- Drivers View -->
-                <section id="drivers" class="view hidden">
-                    <div class="view-header">
-                        <h2>Driver Roster</h2>
-                        <button class="btn btn-primary" onclick="app.openModal('driver-modal')">+ Add Driver</button>
-                    </div>
-                    <div class="table-container glass-panel">
-                        <table id="drivers-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>License</th>
-                                    <th>Phone</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Populated via JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- Trips View -->
-                <section id="trips" class="view hidden">
-                    <div class="view-header">
-                        <h2>Active & Scheduled Trips</h2>
-                        <button class="btn btn-primary" onclick="app.openModal('trip-modal')">+ Schedule Trip</button>
-                    </div>
-                    <div class="table-container glass-panel">
-                        <table id="trips-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Destination</th>
-                                    <th>Start Date</th>
-                                    <th>Vehicle</th>
-                                    <th>Driver</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Populated via JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
+            <div class="feature-card">
+                <div class="icon-box">📍</div>
+                <h3>Live Trip Status</h3>
+                <p>Update and monitor trip statuses from "Scheduled" to "Completed".</p>
             </div>
-        </main>
-    </div>
-
-    <!-- Modals -->
-    <div id="vehicle-modal" class="modal hidden">
-        <div class="modal-content glass-panel">
-            <div class="modal-header">
-                <h2>Add Vehicle</h2>
-                <button class="close-btn" onclick="app.closeModal('vehicle-modal')">×</button>
-            </div>
-            <form id="vehicle-form" onsubmit="app.submitVehicle(event)">
-                <div class="form-group">
-                    <label>Make</label>
-                    <input type="text" id="veh-make" required placeholder="e.g. Volvo">
-                </div>
-                <div class="form-group">
-                    <label>Model</label>
-                    <input type="text" id="veh-model" required placeholder="e.g. FH16">
-                </div>
-                <div class="form-group">
-                    <label>Year</label>
-                    <input type="number" id="veh-year" required placeholder="2026">
-                </div>
-                <div class="form-group">
-                    <label>License Plate</label>
-                    <input type="text" id="veh-plate" required placeholder="ABC-1234">
-                </div>
-                <button type="submit" class="btn btn-primary w-full">Save Vehicle</button>
-            </form>
         </div>
     </div>
 
-    <div id="driver-modal" class="modal hidden">
-        <div class="modal-content glass-panel">
-            <div class="modal-header">
-                <h2>Add Driver</h2>
-                <button class="close-btn" onclick="app.closeModal('driver-modal')">×</button>
-            </div>
-            <form id="driver-form" onsubmit="app.submitDriver(event)">
-                <div class="form-group">
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="auth-card">
+            <button class="close-btn" onclick="document.getElementById('auth-modal').classList.remove('active')">&times;</button>
+            <h2 id="auth-title">Login</h2>
+            <form id="auth-form" onsubmit="handleAuth(event)">
+                <div class="form-group hidden" id="fg-name">
                     <label>Full Name</label>
-                    <input type="text" id="drv-name" required placeholder="John Doe">
+                    <input type="text" id="auth-name" placeholder="John Doe">
+                </div>
+                <div class="form-group hidden" id="fg-dob">
+                    <label>Date of Birth</label>
+                    <input type="date" id="auth-dob">
                 </div>
                 <div class="form-group">
-                    <label>License Number</label>
-                    <input type="text" id="drv-license" required placeholder="DL-123456">
+                    <label>Username</label>
+                    <input type="text" id="auth-username" required placeholder="admin">
                 </div>
                 <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="text" id="drv-phone" placeholder="+1 234 567 890">
+                    <label>Password</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••">
                 </div>
-                <button type="submit" class="btn btn-primary w-full">Save Driver</button>
+                <button type="submit" class="w-full" id="auth-submit">Login to Dashboard</button>
             </form>
+            <button class="toggle-form" onclick="toggleAuthMode()">Don't have an account? <span>Sign Up</span></button>
         </div>
     </div>
 
-    <div id="trip-modal" class="modal hidden">
-        <div class="modal-content glass-panel">
-            <div class="modal-header">
-                <h2>Schedule Trip</h2>
-                <button class="close-btn" onclick="app.closeModal('trip-modal')">×</button>
-            </div>
-            <form id="trip-form" onsubmit="app.submitTrip(event)">
-                <div class="form-group">
-                    <label>Destination</label>
-                    <input type="text" id="trip-dest" required placeholder="E.g. Los Angeles, CA">
-                </div>
-                <div class="form-group">
-                    <label>Start Date</label>
-                    <input type="date" id="trip-start" required>
-                </div>
-                <div class="form-group">
-                    <label>Select Vehicle</label>
-                    <select id="trip-vehicle" required>
-                        <option value="">Loading vehicles...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Select Driver</label>
-                    <select id="trip-driver" required>
-                        <option value="">Loading drivers...</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary w-full">Schedule Trip</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Scripts -->
     <script src="js/api.js"></script>
-    <script src="js/app.js"></script>
-</body>
+    <script>
+        let isLogin = true;
 
+        // Check if already logged in
+        window.onload = async () => {
+            const res = await api.get('auth.php?action=check');
+            if(res && res.status === 'success') {
+                window.location.href = 'app.html';
+            }
+        };
+
+        function openAuth(mode) {
+            isLogin = mode === 'login';
+            updateAuthUI();
+            document.getElementById('auth-modal').classList.add('active');
+        }
+
+        function toggleAuthMode() {
+            isLogin = !isLogin;
+            updateAuthUI();
+        }
+
+        function updateAuthUI() {
+            if(isLogin) {
+                document.getElementById('auth-title').innerText = 'Login';
+                document.getElementById('auth-submit').innerText = 'Login to Dashboard';
+                document.getElementById('fg-name').classList.add('hidden');
+                document.getElementById('fg-dob').classList.add('hidden');
+                document.getElementById('auth-name').removeAttribute('required');
+                document.querySelector('.toggle-form').innerHTML = `Don't have an account? <span>Sign Up</span>`;
+            } else {
+                document.getElementById('auth-title').innerText = 'Create Account';
+                document.getElementById('auth-submit').innerText = 'Sign Up';
+                document.getElementById('fg-name').classList.remove('hidden');
+                document.getElementById('fg-dob').classList.remove('hidden');
+                document.getElementById('auth-name').setAttribute('required', 'true');
+                document.querySelector('.toggle-form').innerHTML = `Already have an account? <span>Login</span>`;
+            }
+        }
+
+        async function handleAuth(e) {
+            e.preventDefault();
+            const username = document.getElementById('auth-username').value;
+            const password = document.getElementById('auth-password').value;
+            const name = document.getElementById('auth-name').value;
+            const dob = document.getElementById('auth-dob').value;
+
+            const action = isLogin ? 'login' : 'signup';
+            const data = isLogin ? {username, password} : {name, dob, username, password};
+
+            const res = await api.post(`auth.php?action=${action}`, data);
+            if(res && res.status === 'success') {
+                window.location.href = 'app.html';
+            } else {
+                alert(res ? res.message : 'Error processing request');
+            }
+        }
+    </script>
+</body>
 </html>

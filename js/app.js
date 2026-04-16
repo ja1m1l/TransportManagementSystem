@@ -1,8 +1,44 @@
 // js/app.js
 const app = {
-    init() {
+    async init() {
+        const res = await api.get('auth.php?action=check');
+        if (!res || res.status !== 'success') {
+            window.location.href = 'index.html';
+            return;
+        }
+        document.getElementById('nav-name').innerText = res.name;
+        document.getElementById('nav-avatar').innerText = res.name.charAt(0).toUpperCase();
+
         this.setupNavigation();
         this.runSetup(); // Run DB setup on first load (for simplicity)
+    },
+
+    async logout() {
+        await api.post('auth.php?action=logout', {});
+        window.location.href = 'index.html';
+    },
+
+    async openProfileModal() {
+        const res = await api.get('auth.php?action=profile');
+        if (res && res.status === 'success') {
+            document.getElementById('prof-name').value = res.data.name;
+            document.getElementById('prof-dob').value = res.data.dob || '';
+            this.openModal('profile-modal');
+        }
+    },
+
+    async submitProfile(e) {
+        e.preventDefault();
+        const name = document.getElementById('prof-name').value;
+        const dob = document.getElementById('prof-dob').value;
+        const password = document.getElementById('prof-password').value;
+        const res = await api.put('auth.php?action=profile', { name, dob, password });
+        if (res && res.status === 'success') {
+            document.getElementById('nav-name').innerText = name;
+            document.getElementById('nav-avatar').innerText = name.charAt(0).toUpperCase();
+            this.closeModal('profile-modal');
+            alert("Profile updated!");
+        }
     },
 
     setupNavigation() {
@@ -64,7 +100,13 @@ const app = {
             document.getElementById('stat-total-vehicles').textContent = data.total_vehicles;
             document.getElementById('stat-active-vehicles').textContent = data.active_vehicles;
             document.getElementById('stat-total-drivers').textContent = data.total_drivers;
-            document.getElementById('stat-active-trips').textContent = data.active_trips;
+
+            if (document.getElementById('stat-scheduled-trips')) {
+                document.getElementById('stat-scheduled-trips').textContent = data.scheduled_trips || 0;
+                document.getElementById('stat-intransit-trips').textContent = data.in_transit_trips || 0;
+                document.getElementById('stat-completed-trips').textContent = data.completed_trips || 0;
+                document.getElementById('stat-cancelled-trips').textContent = data.cancelled_trips || 0;
+            }
 
             const tbody = document.querySelector('#recent-trips-table tbody');
             tbody.innerHTML = '';
@@ -101,12 +143,22 @@ const app = {
                     <td>${v.year}</td>
                     <td><span class="badge ${v.status.toLowerCase()}">${v.status}</span></td>
                     <td>
+                        <button class="btn btn-icon" style="color:var(--accent-blue)" onclick="app.editVehicle(${v.id}, '${v.make}', '${v.model}', ${v.year}, '${v.license_plate}')">✏️</button>
                         <button class="btn btn-danger btn-icon" onclick="app.deleteEntity('vehicles.php', ${v.id}, 'vehicles')">🗑️</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
+    },
+
+    editVehicle(id, make, model, year, license_plate) {
+        this.editingVehicleId = id;
+        document.getElementById('veh-make').value = make;
+        document.getElementById('veh-model').value = model;
+        document.getElementById('veh-year').value = year;
+        document.getElementById('veh-plate').value = license_plate;
+        this.openModal('vehicle-modal');
     },
 
     async submitVehicle(e) {
@@ -116,7 +168,13 @@ const app = {
         const year = document.getElementById('veh-year').value;
         const license_plate = document.getElementById('veh-plate').value;
 
-        const res = await api.post('vehicles.php', { make, model, year, license_plate });
+        let res;
+        if (this.editingVehicleId) {
+            res = await api.put('vehicles.php', { id: this.editingVehicleId, make, model, year, license_plate });
+            this.editingVehicleId = null;
+        } else {
+            res = await api.post('vehicles.php', { make, model, year, license_plate });
+        }
         if (res && res.status === 'success') {
             e.target.reset();
             this.closeModal('vehicle-modal');
@@ -143,6 +201,7 @@ const app = {
                     <td>${d.phone || 'N/A'}</td>
                     <td><span class="badge ${d.status.toLowerCase()}">${d.status}</span></td>
                     <td>
+                        <button class="btn btn-icon" style="color:var(--accent-blue)" onclick="app.editDriver(${d.id}, '${d.name}', '${d.license_number}', '${d.phone || ''}')">✏️</button>
                         <button class="btn btn-danger btn-icon" onclick="app.deleteEntity('drivers.php', ${d.id}, 'drivers')">🗑️</button>
                     </td>
                 `;
@@ -151,13 +210,27 @@ const app = {
         }
     },
 
+    editDriver(id, name, license_number, phone) {
+        this.editingDriverId = id;
+        document.getElementById('drv-name').value = name;
+        document.getElementById('drv-license').value = license_number;
+        document.getElementById('drv-phone').value = phone;
+        this.openModal('driver-modal');
+    },
+
     async submitDriver(e) {
         e.preventDefault();
         const name = document.getElementById('drv-name').value;
         const license_number = document.getElementById('drv-license').value;
         const phone = document.getElementById('drv-phone').value;
 
-        const res = await api.post('drivers.php', { name, license_number, phone });
+        let res;
+        if (this.editingDriverId) {
+            res = await api.put('drivers.php', { id: this.editingDriverId, name, license_number, phone });
+            this.editingDriverId = null;
+        } else {
+            res = await api.post('drivers.php', { name, license_number, phone });
+        }
         if (res && res.status === 'success') {
             e.target.reset();
             this.closeModal('driver-modal');
@@ -183,7 +256,14 @@ const app = {
                     <td>${t.start_date}</td>
                     <td>${t.license_plate || 'N/A'}</td>
                     <td>${t.driver_name || 'N/A'}</td>
-                    <td><span class="badge ${t.status.toLowerCase()}">${t.status}</span></td>
+                    <td>
+                        <select onchange="app.updateTripStatus(${t.id}, this.value)" class="status-dropdown ${t.status.toLowerCase().replace(' ', '-')}">
+                            <option value="Scheduled" ${t.status === 'Scheduled' ? 'selected' : ''}>Scheduled</option>
+                            <option value="In Transit" ${t.status === 'In Transit' ? 'selected' : ''}>In Transit</option>
+                            <option value="Completed" ${t.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                            <option value="Cancelled" ${t.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                        </select>
+                    </td>
                     <td>
                         <button class="btn btn-danger btn-icon" onclick="app.deleteEntity('trips.php', ${t.id}, 'trips')">🗑️</button>
                     </td>
@@ -222,6 +302,16 @@ const app = {
             this.loadTrips();
         } else {
             alert(res.message || 'Error occurred');
+        }
+    },
+
+    async updateTripStatus(id, newStatus) {
+        const res = await api.put('trips.php', { id, status: newStatus });
+        if (res && res.status === 'success') {
+            this.loadTrips();
+            this.loadDashboard(); // Refresh background data
+        } else {
+            alert(res.message || 'Error updating status');
         }
     },
 
